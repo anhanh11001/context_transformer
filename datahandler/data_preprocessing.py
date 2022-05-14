@@ -8,7 +8,6 @@ from datahandler.data_handler import load_data_from_file
 from models.labels import location_labels
 
 test_data_file = train_folder + "/hand_holding/holdinginhand_data_0aff7db2-582f-4f08-b5d9-1f4742e0eb37.csv"
-supported_features = [acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, mag_x, mag_y, mag_z]
 
 
 def convert_data_into_fixed_window_np(
@@ -53,30 +52,43 @@ def convert_data_into_fixed_window_np(
     return finalised_data_list, finalised_label_list
 
 
-def load_all_data(folder_name):
+def load_all_data(
+        folder_name,
+        window_time_in_seconds=1,
+        window_size=16,
+):
     collected_data = []
     collected_labels = []
     for label in os.listdir(folder_name):
         if label.startswith("."):
             continue
         label_dir = os.path.join(folder_name, label)
-        print("Transforming data from label folder: " + label + "...")
+        # print("Transforming data from label folder: " + label + "...")
         if os.path.isdir(label_dir):
             for data_file in os.listdir(label_dir):
                 if data_file.startswith("."):
                     continue
                 filepath = os.path.join(label_dir, data_file)
                 df = load_data_from_file(filepath)
-                sub_collected_data, sub_collected_labels = convert_data_into_fixed_window_np(df)
+                sub_collected_data, sub_collected_labels = convert_data_into_fixed_window_np(df, window_time_in_seconds,
+                                                                                             window_size)
                 collected_data = collected_data + sub_collected_data
                 collected_labels = collected_labels + sub_collected_labels
     return np.array(collected_data), np.array(collected_labels)
 
 
-data, labels = load_all_data(train_folder)
-print("Data shape: " + str(data.shape))
-print("First data shape: " + str(data[0].shape))
-print("Head data for label " + str(labels[0]) + ": " + str(data[0]))
+def get_train_test_data(
+        window_time_in_seconds=1,
+        window_size=16
+):
+    train_x, train_y = load_all_data(train_folder, window_time_in_seconds, window_size)
+    test_x, test_y = load_all_data(test_folder, window_time_in_seconds, window_size)
+    return train_x, train_y, test_x, test_y
+
+# data, labels = load_all_data(train_folder)
+# print("Data shape: " + str(data.shape))
+# print("First data shape: " + str(data[0].shape))
+# print("Head data for label " + str(labels[0]) + ": " + str(data[0]))
 
 # data_from_csv = load_data_from_file(test_data_file)
 # data, labels = convert_data_into_fixed_window_np(data_from_csv)

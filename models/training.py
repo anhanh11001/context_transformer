@@ -1,4 +1,7 @@
 from keras import callbacks, models
+
+from datahandler.constants import supported_features
+from datahandler.data_preprocessing import get_train_test_data
 from transformer import make_transformer_model
 from cnn import make_cnn_model
 import matplotlib.pyplot as plt
@@ -6,26 +9,27 @@ import matplotlib.pyplot as plt
 # Configuration
 from utils import print_line_divider
 
-epochs = 500
-batch_size = 32
-validation_split = 0.2
+window_time_in_seconds = 3
+window_size = 48
+epochs = 8
+batch_size = 1
+validation_split = 0.25
 optimizer = 'adam'
 loss_function = "sparse_categorical_crossentropy"
 
+# Data
+print_line_divider()
+print("Preparing data...")
+x_train, y_train, x_test, y_test = get_train_test_data(window_time_in_seconds, window_size)
+print("Train data shape: " + str(x_train.shape) + " | Train label shape: " + str(y_train.shape))
+print("Test data shape: " + str(x_test.shape) + " | Test label shape: " + str(y_test.shape))
+print_line_divider()
 
-# Model & Data
-def get_model():
-    return make_cnn_model((1, 2))
-
-
-def get_data():
-    pass
-
-
-model = get_model()
+# Setting up model
+model = make_cnn_model(input_shape=(window_size, len(supported_features)))
 print("Model Summary:")
 print(model.summary())
-(x_train, y_train, x_test, y_test) = get_data()
+print(print_line_divider())
 
 callbacks = [
     callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_loss"),
@@ -49,15 +53,8 @@ history = model.fit(
     callbacks=callbacks,
     validation_split=validation_split,
     verbose=1,
+    shuffle=True
 )
-
-# Model evaluation
-model = models.load_model("best_model.h5")
-
-test_loss, test_acc = model.evaluate(x_test, y_test)
-print_line_divider()
-print("Test accuracy", test_acc)
-print("Test loss", test_loss)
 
 # Plotting
 metric = "sparse_categorical_accuracy"
@@ -70,3 +67,11 @@ plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
 plt.show()
 plt.close()
+
+# Model evaluation
+model = models.load_model("best_model.h5")
+
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print_line_divider()
+print("Test accuracy", test_acc)
+print("Test loss", test_loss)
