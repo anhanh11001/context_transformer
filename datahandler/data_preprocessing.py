@@ -1,10 +1,11 @@
 import os
+from datetime import timedelta
 
 import numpy as np
 
-from datahandler.data_handler import train_folder, load_data_from_file
 from datahandler.constants import *
-from datetime import timedelta
+from datahandler.data_handler import load_data_from_file
+from models.labels import location_labels
 
 test_data_file = train_folder + "/hand_holding/holdinginhand_data_0aff7db2-582f-4f08-b5d9-1f4742e0eb37.csv"
 supported_features = [acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, mag_x, mag_y, mag_z]
@@ -41,7 +42,7 @@ def convert_data_into_fixed_window_np(
 
         row_data = data.iloc[current_timestamp_raw_index]
         converted_data_list.append([row_data[att] for att in supported_features])
-        converted_label_list.append(row_data[phone_label])
+        converted_label_list.append(location_labels.index(row_data[phone_label]))
 
     finalised_data_list = []
     finalised_label_list = []

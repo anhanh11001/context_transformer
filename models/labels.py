@@ -1,1 +1,1 @@
-location_labels = ['hand_holding', 'inside_the_bag', 'lying_in_desk', 'pant_pocket', 'texting']
+location_labels = ['holdinginhand', 'insidethebag', 'lyingonthedesk', 'insidethepantpocket', 'beingusedinhand']
