@@ -3,13 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import pandas
 
-from datahandler.label_constants import *
-from utils import get_project_root
-from utils import print_line_divider
-
-data_folder = str(get_project_root()) + "/data"
-train_folder = data_folder + "/train"
-test_folder = data_folder + "/test"
+from datahandler.constants import *
 
 
 def load_data_from_file(filepath):

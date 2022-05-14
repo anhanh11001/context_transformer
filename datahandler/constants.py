@@ -1,3 +1,5 @@
+from utils import get_project_root
+
 date = 'date'
 acc_x = 'accelerometerX'
 acc_y = 'accelerometerY'
@@ -10,3 +12,7 @@ mag_y = 'magnetometerY'
 mag_z = 'magnetometerZ'
 phone_label = 'labelPhone'
 activity_label = 'labelActivity'
+
+data_folder = str(get_project_root()) + "/data"
+train_folder = data_folder + "/train"
+test_folder = data_folder + "/test"
