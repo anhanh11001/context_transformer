@@ -48,7 +48,7 @@ def generate_plot_from_file(filepath, label):
 
     # Saving
     filename = get_file_name_from_file_path(filepath)
-    plots_folder = str(os.getcwd()) + "/plots"
+    plots_folder = str(os.getcwd()) + "/plots" + data_version
     label_folder = plots_folder + "/" + label.lower().strip()
     if not os.path.exists(label_folder):
         os.mkdir(label_folder)

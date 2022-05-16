@@ -3,18 +3,18 @@ from keras import callbacks, models
 from datahandler.constants import supported_features
 from datahandler.data_preprocessing import get_train_test_data
 from transformer import make_transformer_model
-from cnn import make_cnn_model
+from cnn import make_cnn_model_v1, make_cnn_model_v2
 import matplotlib.pyplot as plt
 
 # Configuration
 from utils import print_line_divider
 
 print("STARTING THE TRAINING PROCESS")
-window_time_in_seconds = 4
-window_size = 80
+window_time_in_seconds = 2
+window_size = 40
 epochs = 200
 batch_size = 32
-validation_split = 0.25
+validation_split = 1 / 9
 optimizer = 'adam'
 loss_function = "sparse_categorical_crossentropy"
 
@@ -27,7 +27,7 @@ print("Test data shape: " + str(x_test.shape) + " | Test label shape: " + str(y_
 print_line_divider()
 
 # Setting up model
-model = make_cnn_model(input_shape=(window_size, len(supported_features)))
+model = make_cnn_model_v1(input_shape=(window_size, len(supported_features)))
 print("Model Summary:")
 print(model.summary())
 print(print_line_divider())
@@ -56,7 +56,7 @@ history = model.fit(
     verbose=1,
     shuffle=True
 )
-
+print("Highest validation accuracy: ", max(history.history['val_sparse_categorical_accuracy']))
 # Plotting
 metric = "sparse_categorical_accuracy"
 plt.figure()
