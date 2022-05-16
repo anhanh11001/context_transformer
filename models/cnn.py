@@ -1,5 +1,6 @@
 from keras import layers, models
-from labels import location_labels
+
+from datahandler.constants import location_labels
 
 
 def make_cnn_model(input_shape):

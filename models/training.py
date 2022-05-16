@@ -9,10 +9,11 @@ import matplotlib.pyplot as plt
 # Configuration
 from utils import print_line_divider
 
-window_time_in_seconds = 3
-window_size = 48
-epochs = 8
-batch_size = 1
+print("STARTING THE TRAINING PROCESS")
+window_time_in_seconds = 4
+window_size = 80
+epochs = 200
+batch_size = 32
 validation_split = 0.25
 optimizer = 'adam'
 loss_function = "sparse_categorical_crossentropy"
