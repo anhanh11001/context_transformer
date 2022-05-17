@@ -2,6 +2,8 @@ from keras import layers, models, Sequential
 
 from datahandler.constants import location_labels
 
+CNN_V1_NAME = "Simple CNN model v1 from Keras tutorial"
+
 
 def make_cnn_model_v1(input_shape):
     num_classes = len(location_labels)
@@ -23,7 +25,7 @@ def make_cnn_model_v1(input_shape):
 
     output_layer = layers.Dense(num_classes, activation="softmax")(gap)
 
-    return models.Model(inputs=input_layer, outputs=output_layer)
+    return CNN_V1_NAME, models.Model(inputs=input_layer, outputs=output_layer)
 
 
 def make_cnn_model_v2(input_shape):

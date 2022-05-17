@@ -72,4 +72,6 @@ def generate_plots_from_folder(from_folder):
     print("All plots generated. See results at folder: " + plots_folder)
 
 
-generate_plots_from_folder(train_folder)
+# df = load_data_from_file(test_data_file)
+# print(df.shape)
+# generate_plots_from_folder(train_folder)
