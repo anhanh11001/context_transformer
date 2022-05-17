@@ -4,9 +4,7 @@ from datetime import timedelta
 import numpy as np
 
 from datahandler.constants import *
-from datahandler.data_handler import load_data_from_file
-
-test_data_file = train_folder + "/holdinginhand/holdinginhand_data_0aff7db2-582f-4f08-b5d9-1f4742e0eb37.csv"
+from datahandler.data_visualiser import load_data_from_file
 
 
 # NORMALIZATION
@@ -19,7 +17,7 @@ def normalize_series(series):
 
 
 def normalize_data(df):
-    for feature in supported_features:
+    for feature in all_features:
         df[feature] = normalize_series(df[feature])
     return df
 
@@ -27,6 +25,7 @@ def normalize_data(df):
 # SLICING INTO WINDOW OF DATA
 def convert_data_into_fixed_window_np(
         data,
+        features,
         window_time_in_seconds=1,
         window_size=16,
 ):
@@ -55,14 +54,11 @@ def convert_data_into_fixed_window_np(
                 break
 
         row_data = data.iloc[current_timestamp_raw_index]
-        converted_data_list.append([row_data[att] for att in supported_features])
+        converted_data_list.append([row_data[att] for att in features])
         converted_label_list.append(location_labels.index(row_data[phone_label]))
 
     finalised_data_list = []
     finalised_label_list = []
-    # for i in range(int(len(converted_data_list) / window_size)):
-    #     finalised_data_list.append(np.array(converted_data_list[i * window_size:(i + 1) * window_size]))
-    #     finalised_label_list.append(converted_label_list[i * window_size])
 
     i = 0
     while window_size * (i / 2 + 1) < len(converted_data_list):
@@ -77,6 +73,7 @@ def convert_data_into_fixed_window_np(
 # FINALISED LOADING
 def load_data(
         folder_name,
+        features,
         window_time_in_seconds=1,
         window_size=16,
 ):
@@ -96,6 +93,7 @@ def load_data(
                 normalized = normalize_data(df)
                 sub_collected_data, sub_collected_labels = convert_data_into_fixed_window_np(
                     normalized,
+                    features,
                     window_time_in_seconds,
                     window_size
                 )
@@ -104,12 +102,9 @@ def load_data(
     return np.array(collected_data), np.array(collected_labels)
 
 
-def get_train_test_data(
-        window_time_in_seconds=1,
-        window_size=16
-):
-    train_x, train_y = load_data(train_folder, window_time_in_seconds, window_size)
-    test_x, test_y = load_data(test_folder, window_time_in_seconds, window_size)
+def get_train_test_data(features, window_time_in_seconds=1, window_size=16):
+    train_x, train_y = load_data(train_folder, features, window_time_in_seconds, window_size)
+    test_x, test_y = load_data(test_folder, features, window_time_in_seconds, window_size)
     return train_x, train_y, test_x, test_y
 
 # data_from_csv = load_data_from_file(test_data_file)

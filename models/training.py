@@ -1,6 +1,6 @@
 from keras import callbacks, models
 
-from datahandler.constants import supported_features
+from datahandler.constants import all_features
 from datahandler.data_preprocessing import get_train_test_data
 from transformer import make_transformer_model
 from cnn import make_cnn_model_v1, make_cnn_model_v2
@@ -14,20 +14,31 @@ window_time_in_seconds = 2
 window_size = 40
 epochs = 200
 batch_size = 32
-validation_split = 1 / 9
+validation_split = 2 / 9
 optimizer = 'adam'
 loss_function = "sparse_categorical_crossentropy"
+supported_features = all_features
 
 # Data
 print_line_divider()
 print("Preparing data...")
-x_train, y_train, x_test, y_test = get_train_test_data(window_time_in_seconds, window_size)
+x_train, y_train, x_test, y_test = get_train_test_data(supported_features, window_time_in_seconds, window_size)
 print("Train data shape: " + str(x_train.shape) + " | Train label shape: " + str(y_train.shape))
 print("Test data shape: " + str(x_test.shape) + " | Test label shape: " + str(y_test.shape))
 print_line_divider()
 
 # Setting up model
 model = make_cnn_model_v1(input_shape=(window_size, len(supported_features)))
+# model = make_transformer_model(
+#     input_shape=(window_size, len(supported_features)),
+#     head_size=256,
+#     num_heads=4,
+#     ff_dim=4,
+#     num_transformer_blocks=4,
+#     mlp_units=[128],
+#     mlp_dropout=0.4,
+#     dropout=0.25,
+# )
 print("Model Summary:")
 print(model.summary())
 print(print_line_divider())
