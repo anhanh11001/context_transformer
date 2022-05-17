@@ -5,18 +5,24 @@ from datahandler.constants import training_log_folder
 
 class LogWriter:
 
-    def __init__(self):
-        # Name format should be something like id_<number>_
+    def __init__(self, enabled=True):
+        self.enabled = enabled
+        if not enabled:
+            return
         self.base_folder = self.prepare_base_folder()
         self.file = open(os.path.join(self.base_folder, "log.txt"), 'w')
         self.write("LOG ON DATE TIME: " + str(datetime.now()))
 
     def write(self, str, line_divider=False):
+        if not self.enabled:
+            return
         if line_divider:
             self.file.write("\n*************************************************\n")
         self.file.write(str + "\n")
 
     def close(self):
+        if not self.enabled:
+            return
         self.file.close()
 
     def prepare_base_folder(self):

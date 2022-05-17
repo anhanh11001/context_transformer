@@ -5,18 +5,20 @@ from keras import callbacks, models
 from datahandler.constants import all_features, data_version
 from datahandler.data_preprocessing import get_train_test_data
 from models.log_writer import LogWriter
+from models.lstm import make_lstm_model_v1
 from transformer import make_transformer_model
 from cnn import make_cnn_model_v1, make_cnn_model_v2
 import matplotlib.pyplot as plt
 from utils import print_line_divider
 
-log_writer = LogWriter()
+enabled_log = False
+log_writer = LogWriter(enabled_log)
 
 # Configuration
 print("STARTING THE TRAINING PROCESS")
 window_time_in_seconds = 2
 window_size = 40
-epochs = 20
+epochs = 200
 batch_size = 32
 validation_split = 2 / 9
 optimizer = 'adam'
@@ -50,7 +52,9 @@ Data testing shape: ${x_test.shape}"""
 )
 
 # Setting up model
-name, model = make_cnn_model_v1(input_shape=(window_size, len(supported_features)))
+input_shape = (window_size, len(supported_features))
+# name, model = make_cnn_model_v1(input_shape=input_shape)
+model_name, model = make_lstm_model_v1(input_shape=input_shape)
 # model = make_transformer_model(
 #     input_shape=(window_size, len(supported_features)),
 #     head_size=256,
@@ -70,15 +74,18 @@ print(print_line_divider())
 
 # Logging model
 log_writer.write("Model", line_divider=True)
-log_writer.write("Model name: " + name)
+log_writer.write("Model name: " + model_name)
 log_writer.write(short_model_summary)
 
-callbacks = [
+callback_list = [
     callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_loss"),
-    callbacks.ModelCheckpoint(log_writer.base_folder + "/model.h5", save_best_only=True, monitor="val_loss"),
     callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001),
     callbacks.EarlyStopping(monitor="val_loss", patience=50, verbose=1),
 ]
+if log_writer.enabled:
+    callback_list.append(
+        callbacks.ModelCheckpoint(log_writer.base_folder + "/model.h5", save_best_only=True, monitor="val_loss")
+    )
 model.compile(
     optimizer=optimizer,
     loss=loss_function,
@@ -93,7 +100,7 @@ history = model.fit(
     y_train,
     batch_size=batch_size,
     epochs=epochs,
-    callbacks=callbacks,
+    callbacks=callback_list,
     validation_split=validation_split,
     verbose=1,
     shuffle=True
@@ -107,11 +114,12 @@ metric = "sparse_categorical_accuracy"
 plt.figure()
 plt.plot(history.history[metric])
 plt.plot(history.history["val_" + metric])
-plt.title("model " + metric)
+plt.title("model " + model_name + " :" + metric)
 plt.ylabel(metric, fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
-plt.savefig(os.path.join(log_writer.base_folder, "Validation progress.png"))
+if log_writer.enabled:
+    plt.savefig(os.path.join(log_writer.base_folder, "Validation progress.png"))
 plt.show()
 plt.close()
 log_writer.close()
