@@ -2,7 +2,7 @@ from keras import layers, Sequential
 
 from datahandler.constants import location_labels
 
-LSTM_V1_NAME = "Simple LSTM model v1 from Keras tutorial"
+LSTM_V1_NAME = "Simple LSTM model v1 from Book"
 
 
 def make_lstm_model_v1(input_shape):

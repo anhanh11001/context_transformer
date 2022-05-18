@@ -2,11 +2,11 @@ import os.path
 
 from keras import callbacks, models
 
-from datahandler.constants import all_features, data_version
+from datahandler.constants import all_features, data_version, acc_features
 from datahandler.data_preprocessing import get_train_test_data
 from models.log_writer import LogWriter
 from models.lstm import make_lstm_model_v1
-from transformer import make_transformer_model
+from transformer import make_transformer_model_v1
 from cnn import make_cnn_model_v1, make_cnn_model_v2
 import matplotlib.pyplot as plt
 from utils import print_line_divider
@@ -20,10 +20,10 @@ window_time_in_seconds = 2
 window_size = 40
 epochs = 200
 batch_size = 32
-validation_split = 2 / 9
+validation_split = 1 / 9
 optimizer = 'adam'
 loss_function = "sparse_categorical_crossentropy"
-supported_features = all_features
+supported_features = acc_features
 
 log_writer.write("Configuration", line_divider=True)
 log_writer.write(
@@ -53,18 +53,18 @@ Data testing shape: ${x_test.shape}"""
 
 # Setting up model
 input_shape = (window_size, len(supported_features))
-# name, model = make_cnn_model_v1(input_shape=input_shape)
-model_name, model = make_lstm_model_v1(input_shape=input_shape)
-# model = make_transformer_model(
-#     input_shape=(window_size, len(supported_features)),
-#     head_size=256,
-#     num_heads=4,
-#     ff_dim=4,
-#     num_transformer_blocks=4,
-#     mlp_units=[128],
-#     mlp_dropout=0.4,
-#     dropout=0.25,
-# )
+# model_name, model = make_cnn_model_v1(input_shape=input_shape)
+# model_name, model = make_lstm_model_v1(input_shape=input_shape)
+model_name, model = make_transformer_model_v1(
+    input_shape=input_shape,
+    head_size=256,
+    num_heads=4,
+    ff_dim=4,
+    num_transformer_blocks=1,
+    mlp_units=[128],
+    mlp_dropout=0.4,
+    dropout=0.25,
+)
 print("Model Summary:")
 stringlist = []
 model.summary(print_fn=lambda x: stringlist.append(x))
@@ -129,5 +129,5 @@ model = models.load_model("best_model.h5")
 
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print_line_divider()
-# print("Test accuracy", test_acc)
-# print("Test loss", test_loss)
+print("Test accuracy", test_acc)
+print("Test loss", test_loss)

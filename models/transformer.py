@@ -2,25 +2,29 @@ from keras import layers, models
 
 from datahandler.constants import location_labels
 
+TRANSFORMER_V1_NAME = "Simple Transformer model v1 from Keras tutorial"
+
 
 def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
-    # Attention and Normalization
+    # Normalization and Attention
+    x = layers.LayerNormalization(epsilon=1e-6)(inputs)
     x = layers.MultiHeadAttention(
-        key_dim=head_size, num_heads=num_heads, dropout=dropout
-    )(inputs, inputs)
+        key_dim=head_size,
+        num_heads=num_heads,
+        dropout=dropout
+    )(x, x)
     x = layers.Dropout(dropout)(x)
-    x = layers.LayerNormalization(epsilon=1e-6)(x)
     res = x + inputs
 
     # Feed Forward Part
-    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(res)
+    x = layers.LayerNormalization(epsilon=1e-6)(res)
+    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="gelu")(x)
     x = layers.Dropout(dropout)(x)
     x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
-    x = layers.LayerNormalization(epsilon=1e-6)(x)
     return x + res
 
 
-def make_transformer_model(
+def make_transformer_model_v1(
         input_shape,
         head_size,
         num_heads,
@@ -41,4 +45,4 @@ def make_transformer_model(
         x = layers.Dense(dim, activation="relu")(x)
         x = layers.Dropout(mlp_dropout)(x)
     outputs = layers.Dense(num_classes, activation="softmax")(x)
-    return models.Model(inputs, outputs)
+    return TRANSFORMER_V1_NAME, models.Model(inputs, outputs)
