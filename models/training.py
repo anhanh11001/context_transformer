@@ -11,14 +11,14 @@ from cnn import make_cnn_model_v1, make_cnn_model_v2
 import matplotlib.pyplot as plt
 from utils import print_line_divider
 
-enabled_log = False
+enabled_log = True
 log_writer = LogWriter(enabled_log)
 
 # Configuration
 print("STARTING THE TRAINING PROCESS")
 window_time_in_seconds = 2
 window_size = 40
-epochs = 200
+epochs = 1000
 batch_size = 32
 validation_split = 1 / 9
 optimizer = 'adam'
@@ -60,7 +60,7 @@ model_name, model = make_transformer_model_v1(
     head_size=256,
     num_heads=4,
     ff_dim=4,
-    num_transformer_blocks=1,
+    num_transformer_blocks=2,
     mlp_units=[128],
     mlp_dropout=0.4,
     dropout=0.25,
@@ -80,7 +80,7 @@ log_writer.write(short_model_summary)
 callback_list = [
     callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_loss"),
     callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001),
-    callbacks.EarlyStopping(monitor="val_loss", patience=50, verbose=1),
+    callbacks.EarlyStopping(monitor="val_loss", patience=200, verbose=1),
 ]
 if log_writer.enabled:
     callback_list.append(
@@ -122,7 +122,6 @@ if log_writer.enabled:
     plt.savefig(os.path.join(log_writer.base_folder, "Validation progress.png"))
 plt.show()
 plt.close()
-log_writer.close()
 
 # Model evaluation
 model = models.load_model("best_model.h5")
@@ -131,3 +130,7 @@ test_loss, test_acc = model.evaluate(x_test, y_test)
 print_line_divider()
 print("Test accuracy", test_acc)
 print("Test loss", test_loss)
+log_writer.write("Test evaluation", line_divider=True)
+log_writer.write("Test accuracy: " + str(test_acc))
+log_writer.write("Test loss: " + str(test_loss))
+log_writer.close()

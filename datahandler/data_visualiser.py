@@ -63,7 +63,7 @@ def generate_plots_from_folder(from_folder):
         plot_features(
             df=df,
             title="All features: " + filename,
-            features=acc_features,
+            features=all_features,
             fragmented_seconds=10,
             show_plot=False,
             save_plot=True,
@@ -74,4 +74,4 @@ def generate_plots_from_folder(from_folder):
 
 # df = load_data_from_file(test_data_file)
 # print(df.shape)
-# generate_plots_from_folder(train_folder)
+generate_plots_from_folder(train_folder)

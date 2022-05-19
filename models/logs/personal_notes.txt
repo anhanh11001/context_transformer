@@ -1,0 +1,31 @@
+Training process
+
+*******************************************************
+18/05/2022
+
+ID1 - Data v1 -> Observation, converging to around 0 when training
+ID2 - Change window size to see if there are any differences
+ID3 - Change the used features to only accelerometers
+ID4 - Change the validation split from 0.25 to 0.1
+--> Validation around 20% (do not converge greatly), testing accuracy less than 10%
+Also tried a lot of other different configuration, fails to improve the convergence of the validation
+Basically now, I recollect the data to v2
+
+ID5 - New data, 5 train 1 min test
+ID6 - Lower the validation split to 2/9
+ID7 - Increase the training data to 9 minute of training data.
+ID8 - Even more data.
+-- Validation max around 50%, testing accuracy not good as well, best is around 0.7
+
+ID9 - Train with validation split of 1/9
+ID10 - Retrain again with validation split of 1/9
+ID11 - Reduce window size to 40
+ID12- Train with accelerometer
+-- Validation converge to max around 100%, testing accuracy around 0.75, train with accelerometer is also fine.
+
+ID13 - Train with LSTM
+ID14 - Train with LSTM again
+-- Validation also converge to max around 99%, testing accuracy also around 0.7
+
+ID15 - Train with Transformer
+ID16 - Train with Transformer

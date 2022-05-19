@@ -1,0 +1,48 @@
+LOG ON DATE TIME: 2022-05-18 22:38:32.075113
+
+*************************************************
+Configuration
+Window size: 40
+Window time in second: $2
+Maximum number of epochs: $200
+Batch size: $32
+Validation split: $0.1111111111111111
+Optimizer: $adam
+Loss function: $sparse_categorical_crossentropy
+Features used for training: $['accelerometerX', 'accelerometerY', 'accelerometerZ']
+
+*************************************************
+Data
+Data loaded from version /v2
+Data training shape: $(3424, 40, 3)
+Data testing shape: $(239, 40, 3)
+
+*************************************************
+Model
+Model name: Simple LSTM model v1 from Book
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ lstm (LSTM)                 (None, 100)               41600     
+                                                                 
+ dropout (Dropout)           (None, 100)               0         
+                                                                 
+ dense (Dense)               (None, 100)               10100     
+                                                                 
+ dense_1 (Dense)             (None, 5)                 505       
+                                                                 
+=================================================================
+Total params: 52,205
+Trainable params: 52,205
+Non-trainable params: 0
+_________________________________________________________________
+
+*************************************************
+Result
+Highest validation accuracy: 1.0
+
+*************************************************
+Test evaluation
+Test accuracy: 0.7196652889251709
+Test loss: 4.852921009063721
