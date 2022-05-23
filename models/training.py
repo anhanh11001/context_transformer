@@ -1,8 +1,7 @@
 import os.path
 
 from keras import callbacks, models
-
-from datahandler.constants import all_features, data_version, acc_features
+from datahandler.constants import all_features, data_version, acc_features, tensorboard_dir
 from datahandler.data_preprocessing import get_train_test_data
 from models.log_writer import LogWriter
 from models.lstm import make_lstm_model_v1
@@ -11,14 +10,14 @@ from cnn import make_cnn_model_v1, make_cnn_model_v2
 import matplotlib.pyplot as plt
 from utils import print_line_divider
 
-enabled_log = True
+enabled_log = False
 log_writer = LogWriter(enabled_log)
 
 # Configuration
 print("STARTING THE TRAINING PROCESS")
 window_time_in_seconds = 2
 window_size = 40
-epochs = 1000
+epochs = 200
 batch_size = 32
 validation_split = 1 / 9
 optimizer = 'adam'
@@ -53,18 +52,18 @@ Data testing shape: ${x_test.shape}"""
 
 # Setting up model
 input_shape = (window_size, len(supported_features))
-# model_name, model = make_cnn_model_v1(input_shape=input_shape)
+model_name, model = make_cnn_model_v1(input_shape=input_shape)
 # model_name, model = make_lstm_model_v1(input_shape=input_shape)
-model_name, model = make_transformer_model_v1(
-    input_shape=input_shape,
-    head_size=256,
-    num_heads=4,
-    ff_dim=4,
-    num_transformer_blocks=2,
-    mlp_units=[128],
-    mlp_dropout=0.4,
-    dropout=0.25,
-)
+# model_name, model = make_transformer_model_v1(
+#     input_shape=input_shape,
+#     head_size=256,
+#     num_heads=4,
+#     ff_dim=4,
+#     num_transformer_blocks=2,
+#     mlp_units=[128],
+#     mlp_dropout=0.4,
+#     dropout=0.25,
+# )
 print("Model Summary:")
 stringlist = []
 model.summary(print_fn=lambda x: stringlist.append(x))
@@ -81,6 +80,7 @@ callback_list = [
     callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_loss"),
     callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001),
     callbacks.EarlyStopping(monitor="val_loss", patience=200, verbose=1),
+    callbacks.TensorBoard(log_dir=tensorboard_dir, histogram_freq=1)
 ]
 if log_writer.enabled:
     callback_list.append(
