@@ -1,7 +1,8 @@
 import os.path
+import sys
 
 from keras import callbacks, models
-from datahandler.constants import all_features, data_version, acc_features, tensorboard_dir
+from datahandler.constants import all_features, data_version, acc_features, tensorboard_dir, location_labels
 from datahandler.data_preprocessing import get_train_test_data
 from models.log_writer import LogWriter
 from models.lstm import make_lstm_model_v1
@@ -9,8 +10,13 @@ from transformer import make_transformer_model_v1
 from cnn import make_cnn_model_v1, make_cnn_model_v2
 import matplotlib.pyplot as plt
 from utils import print_line_divider
+import numpy as np
+import tensorflow as tf
+import pandas as pd
+import seaborn as sns
 
-enabled_log = False
+enabled_log = True
+enabled_tensor_board = False
 log_writer = LogWriter(enabled_log)
 
 # Configuration
@@ -79,9 +85,10 @@ log_writer.write(short_model_summary)
 callback_list = [
     callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_loss"),
     callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001),
-    callbacks.EarlyStopping(monitor="val_loss", patience=200, verbose=1),
-    callbacks.TensorBoard(log_dir=tensorboard_dir, histogram_freq=1)
+    callbacks.EarlyStopping(monitor="val_loss", patience=50, verbose=1)
 ]
+if enabled_tensor_board:
+    callback_list.append(callbacks.TensorBoard(log_dir=tensorboard_dir, histogram_freq=1))
 if log_writer.enabled:
     callback_list.append(
         callbacks.ModelCheckpoint(log_writer.base_folder + "/model.h5", save_best_only=True, monitor="val_loss")
@@ -130,6 +137,23 @@ test_loss, test_acc = model.evaluate(x_test, y_test)
 print_line_divider()
 print("Test accuracy", test_acc)
 print("Test loss", test_loss)
+
+# Accuracy based on different labels
+y_pred = model.predict(x_test)
+y_pred = np.argmax(y_pred, axis=1)
+con_mat = tf.math.confusion_matrix(labels=y_test, predictions=y_pred).numpy()
+con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=4)
+con_mat_df = pd.DataFrame(con_mat_norm, index=location_labels, columns=location_labels)
+figure = plt.figure(figsize=(8, 8))
+sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
+plt.tight_layout()
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+if log_writer.enabled:
+    plt.savefig(os.path.join(log_writer.base_folder, "Accuracy.png"))
+plt.show()
+plt.close()
+
 log_writer.write("Test evaluation", line_divider=True)
 log_writer.write("Test accuracy: " + str(test_acc))
 log_writer.write("Test loss: " + str(test_loss))
