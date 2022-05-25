@@ -64,7 +64,7 @@ def generate_plots_from_folder(from_folder):
             df=df,
             title="All features: " + filename,
             features=all_features,
-            fragmented_seconds=10,
+            fragmented_seconds=None,
             show_plot=False,
             save_plot=True,
             save_location=plots_folder
