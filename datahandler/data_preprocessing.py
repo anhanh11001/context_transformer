@@ -83,7 +83,6 @@ def load_data(
         if label.startswith("."):
             continue
         label_dir = os.path.join(folder_name, label)
-        # print("Transforming data from label folder: " + label + "...")
         if os.path.isdir(label_dir):
             for data_file in os.listdir(label_dir):
                 if data_file.startswith("."):
@@ -101,7 +100,6 @@ def load_data(
                 collected_labels = collected_labels + sub_collected_labels
     return np.array(collected_data), np.array(collected_labels)
 
-
 def get_train_test_data(features, window_time_in_seconds=1, window_size=16):
     train_x, train_y = load_data(train_folder, features, window_time_in_seconds, window_size)
     test_x, test_y = load_data(test_folder, features, window_time_in_seconds, window_size)
@@ -114,3 +112,45 @@ def get_train_test_data(features, window_time_in_seconds=1, window_size=16):
 # print("Data shape: " + str(data.shape))
 # print("First data shape: " + str(data[0].shape))
 # print("Head data for label " + str(labels[0]) + ": " + str(data[0]))
+
+
+def load_data_v3(folder=test_folder, features=all_features, window_time_in_seconds=1, window_size=32):
+    train_data = []
+    train_labels = []
+    test_data = []
+    test_labels = []
+    test_split = 0.1
+
+    for datafile in os.listdir(folder):
+        if datafile.startswith("."):
+            continue
+        filepath = os.path.join(folder, datafile)
+        df = load_data_from_file(filepath)
+        normalized = normalize_data(df)
+        test_df = normalized.sample(frac=test_split)
+        train_df = normalized.drop(test_df.index)
+        sub_train_data, sub_train_labels = convert_data_into_fixed_window_np(
+            train_df,
+            features,
+            window_time_in_seconds,
+            window_size
+        )
+        sub_test_data, sub_test_labels = convert_data_into_fixed_window_np(
+            test_df,
+            features,
+            window_time_in_seconds,
+            window_size
+        )
+        train_data = train_data + sub_train_data
+        train_labels = train_labels + sub_train_labels
+        test_data = test_data + sub_test_data
+        test_labels = test_labels + sub_test_labels
+
+    return np.array(train_data), np.array(train_labels), np.array(test_data), np.array(test_labels)
+
+
+# train_x, train_y, test_x, test_y = load_data_v3(train_folder, all_features, window_time_in_seconds=1, window_size=32)
+# print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
+# print(train_x)
+# print(test_x)
+

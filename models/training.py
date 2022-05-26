@@ -3,7 +3,7 @@ import sys
 
 from keras import callbacks, models
 from datahandler.constants import all_features, data_version, acc_features, tensorboard_dir, location_labels
-from datahandler.data_preprocessing import get_train_test_data
+from datahandler.data_preprocessing import get_train_test_data, load_data_v3
 from models.log_writer import LogWriter
 from models.lstm import make_lstm_model_v1
 from transformer import make_transformer_model_v1
@@ -23,7 +23,7 @@ log_writer = LogWriter(enabled_log)
 print("STARTING THE TRAINING PROCESS")
 window_time_in_seconds = 2
 window_size = 40
-epochs = 200
+epochs = 1000
 batch_size = 32
 validation_split = 1 / 9
 optimizer = 'adam'
@@ -45,7 +45,12 @@ Features used for training: ${str(supported_features)}"""
 # Data
 print_line_divider()
 print("Preparing data...")
-x_train, y_train, x_test, y_test = get_train_test_data(supported_features, window_time_in_seconds, window_size)
+# x_train, y_train, x_test, y_test = get_train_test_data(supported_features, window_time_in_seconds, window_size)
+x_train, y_train, x_test, y_test = load_data_v3(
+    features = supported_features,
+    window_time_in_seconds = window_time_in_seconds,
+    window_size = window_size
+)
 print("Train data shape: " + str(x_train.shape) + " | Train label shape: " + str(y_train.shape))
 print("Test data shape: " + str(x_test.shape) + " | Test label shape: " + str(y_test.shape))
 print_line_divider()

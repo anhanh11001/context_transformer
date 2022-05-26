@@ -34,4 +34,4 @@ all_features = [acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, mag_x, mag_y, mag_z
 acc_features = [acc_x, acc_y, acc_z]
 gyro_features = [gyro_x, gyro_y, gyro_z]
 mag_features = [mag_x, mag_y, mag_z]
-location_labels = ['holdinginhand', 'insidethebag', 'lyingonthedesk', 'insidethepantpocket', 'beingusedinhand']
+location_labels = ['holdinginhand', 'insidethebag', 'calling', 'insidethepantpocket', 'beingusedinhand']
