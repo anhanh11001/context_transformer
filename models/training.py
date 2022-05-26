@@ -1,13 +1,10 @@
 import os.path
-import sys
 
 from keras import callbacks, models
-from datahandler.constants import all_features, data_version, acc_features, tensorboard_dir, location_labels
-from datahandler.data_preprocessing import get_train_test_data, load_data_v3
+from datahandler.constants import data_version, acc_features, tensorboard_dir, location_labels
+from datahandler.data_preprocessing import load_data_v3
 from models.log_writer import LogWriter
-from models.lstm import make_lstm_model_v1
-from transformer import make_transformer_model_v1
-from cnn import make_cnn_model_v1, make_cnn_model_v2
+from models.model.cnn import make_cnn_model_v1
 import matplotlib.pyplot as plt
 from utils import print_line_divider
 import numpy as np
@@ -21,6 +18,7 @@ log_writer = LogWriter(enabled_log)
 
 # Configuration
 print("STARTING THE TRAINING PROCESS")
+SAVED_BEST_MODEL = "model/best_model.h5"
 window_time_in_seconds = 2
 window_size = 40
 epochs = 1000
@@ -88,7 +86,7 @@ log_writer.write("Model name: " + model_name)
 log_writer.write(short_model_summary)
 
 callback_list = [
-    callbacks.ModelCheckpoint("best_model.h5", save_best_only=True, monitor="val_loss"),
+    callbacks.ModelCheckpoint(SAVED_BEST_MODEL, save_best_only=True, monitor="val_loss"),
     callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001),
     callbacks.EarlyStopping(monitor="val_loss", patience=50, verbose=1)
 ]
@@ -136,7 +134,7 @@ plt.show()
 plt.close()
 
 # Model evaluation
-model = models.load_model("best_model.h5")
+model = models.load_model(SAVED_BEST_MODEL)
 
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print_line_divider()

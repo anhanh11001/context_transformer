@@ -73,4 +73,4 @@ def generate_plots_from_folder(from_folder):
 
 # df = load_data_from_file(test_data_file)
 # print(df.shape)
-generate_plots_from_folder(train_folder)
+# generate_plots_from_folder(train_folder)
