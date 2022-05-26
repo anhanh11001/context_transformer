@@ -143,7 +143,7 @@ def load_data_v3(folder=train_folder, features=all_features, window_time_in_seco
     train_labels = []
     test_data = []
     test_labels = []
-    test_split = 0.1
+    test_split = 0.2
     for i in range(len(all_data)):
         if random() < test_split: # Go to test set
             test_data.append(all_data[i])
