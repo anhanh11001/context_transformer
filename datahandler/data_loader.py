@@ -6,6 +6,15 @@ from utils import print_line_divider
 from numpy import vstack
 
 
+def load_date_from_steptracking_file(filepath, show_info=False):
+    data = pandas.read_csv(filepath)
+    data['date'] = pandas.to_datetime(data['date'], format='%d %b %Y %H:%M:%S:%f %z')
+    dates = []
+    for value in data.values[:, 0]:
+        dates.append(value.to_pydatetime())
+    return dates
+
+
 def load_data_from_file(filepath, show_info=False):
     data = pandas.read_csv(filepath)
     data['date'] = pandas.to_datetime(data['date'], format='%d %b %Y %H:%M:%S:%f %z')

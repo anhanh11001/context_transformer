@@ -1,5 +1,6 @@
 from utils import get_project_root
 from datetime import datetime
+import os
 
 # DATA CONSTANT
 date = 'date'
@@ -22,12 +23,14 @@ train_folder = data_folder + "/train"
 test_folder = data_folder + "/test"
 plots_folder = str(get_project_root()) + "/datahandler/plots" + data_version
 training_log_folder = str(get_project_root()) + "/models/logs"
+tensorboard_dir = "tensorboard/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+
+# TEST DATA FILE
 test_data_file = str(
     get_project_root()
 ) + "/data/v1/train/holdinginhand/holdinginhand_data_0aff7db2-582f-4f08-b5d9-1f4742e0eb37.csv"
-tensorboard_dir = "tensorboard/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-
-
+test_data_file_v3 = str(get_project_root()) + "/data/v3/train/op1_datacollection.csv"
+test_data_file_step_v3 = str(get_project_root()) + "/data/v3/step/op1_steptracking.csv"
 
 # FEATURE LIST
 all_features = [acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, mag_x, mag_y, mag_z]
