@@ -89,7 +89,7 @@ def generate_plots_from_folder(from_folder):
 #     df=data_df,
 #     title="All features: " + test_data_file_v3,
 #     features=all_features,
-#     fragmented_seconds=3,
+#     fragmented_seconds=10,
 #     show_plot=True,
 #     save_plot=False,
 #     step_dates=dates

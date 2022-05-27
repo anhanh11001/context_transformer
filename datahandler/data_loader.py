@@ -4,14 +4,33 @@ import pandas
 
 from utils import print_line_divider
 from numpy import vstack
+from datetime import timedelta
+
+def get_step_tracking_time_calibrated_diff(filename):
+    # More information found on link
+    print(filename)
+    if filename.startswith("op"):  # Data: HTC sync01 - Step: Pixel3a
+        return 202
+    elif filename.startswith("ps"):  # Data: Samsung other - Step: Pixel3a
+        return 7846
+    elif filename.startswith("ss"):  # Data: Samsung Do not move - Step: Pixel3a
+        return -20891638633
+    elif filename.startswith("px"):  # Data: Pixel3a - Step: HTC sync01
+        return -202
+    elif filename.startswith("tc"):  # Data: HTC other - Step: Pixel3a
+        return 3593
+    return 0
 
 
-def load_date_from_steptracking_file(filepath, show_info=False):
+def load_date_from_steptracking_file(filepath):
     data = pandas.read_csv(filepath)
     data['date'] = pandas.to_datetime(data['date'], format='%d %b %Y %H:%M:%S:%f %z')
     dates = []
+
+    filename = filepath.split("/")[-1]
+    time_diff_in_millis = get_step_tracking_time_calibrated_diff(filename)
     for value in data.values[:, 0]:
-        dates.append(value.to_pydatetime())
+        dates.append(value.to_pydatetime() + timedelta(milliseconds=time_diff_in_millis))
     return dates
 
 
