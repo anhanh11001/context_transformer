@@ -238,21 +238,21 @@ def load_train_test_data_added_features_pca():
         no_features = df.shape[1] - 1
         values = df.iloc[:, 0:no_features]
         labels = df.loc[:, "labelPhone"]
-        window_index_start = 0
-        window_index_increasing_size = int(WINDOW_SIZE / 2)
-        while window_index_start + WINDOW_SIZE < df.shape[0]:
-            if random() < test_split:
-                test_x.append(values.iloc[i])
-                test_y.append(labels[i])
-            else:
-                train_x.append(values.iloc[i])
-                train_y.append(labels[i])
-            window_index_start += window_index_increasing_size
-        # for i in range(df.shape[0]):
+        # window_index_start = 0
+        # window_index_increasing_size = int(WINDOW_SIZE / 2)
+        # while window_index_start + WINDOW_SIZE < df.shape[0]:
         #     if random() < test_split:
         #         test_x.append(values.iloc[i])
         #         test_y.append(labels[i])
         #     else:
         #         train_x.append(values.iloc[i])
         #         train_y.append(labels[i])
+        #     window_index_start += window_index_increasing_size
+        for i in range(df.shape[0]):
+            if random() < test_split:
+                test_x.append(values.iloc[i])
+                test_y.append(labels[i])
+            else:
+                train_x.append(values.iloc[i])
+                train_y.append(labels[i])
     return np.array(train_x), np.array(train_y), np.array(test_x), np.array(test_y)
