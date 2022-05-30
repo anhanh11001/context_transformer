@@ -29,3 +29,8 @@ ID14 - Train with LSTM again
 
 ID15 - Train with Transformer
 ID16 - Train with Transformer
+
+*******************************************************
+30/05/2022
+
+ID1-6 - Data v3
