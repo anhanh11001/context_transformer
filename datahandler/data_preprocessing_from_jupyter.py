@@ -13,6 +13,7 @@ from sklearn.decomposition import PCA
 from random import random
 
 DF_TYPE_RAW = 0
+DF_TYPE_RAW_ADDED = 1
 DF_TYPE_TIME_SERIES_DOMAIN_NORMALIZED = 2
 DF_TYPE_TIME_SERIES_DOMAIN_PCA = 3
 WINDOW_SIZE = 40
@@ -20,6 +21,11 @@ WINDOW_LENGTH_IN_SECONDS = 2
 raw_features = all_features
 added_features = ["accMag", "gyroMag", "magMag", "accAng", "gyroAng", "magAng"]
 test_split = 0.2
+top_10_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
+                   "stdmagnetometerY", "stdgyroAng", "mingyroAng", "stdaccelerometerX"]
+top_15_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
+                   "stdmagnetometerY", "stdgyroAng", "mingyroAng", "stdaccelerometerX", "minmagMag", "mingyroscopeY",
+                   "meangyroscopeX", "maxmagMag", "meangyroscopeZ"]
 
 
 def standardize_pca_df(df):
@@ -113,9 +119,12 @@ def load_df_from_files(filepath, df_type):
     fixed_size_df['gyroAng'] = gyroAng
     fixed_size_df['magAng'] = magAng
 
+    if df_type == DF_TYPE_RAW_ADDED:
+        return normalize_df(fixed_size_df)
+
     # Step 4: Convert current features into time-series domain feature
     window_index_start = 0
-    window_index_increasing_size = int(WINDOW_SIZE / 2)
+    window_index_increasing_size = int(WINDOW_SIZE / 4)
     feature_columns = []
     feature_data = []
 
@@ -149,6 +158,11 @@ def load_df_from_files(filepath, df_type):
         data=feature_data,
         columns=feature_columns
     )
+
+    # Step 4.2 - Select top features only
+    supported_features = top_10_features + ["labelPhone"]
+    features_df = features_df[supported_features]
+
     if df_type == DF_TYPE_TIME_SERIES_DOMAIN_NORMALIZED:
         return normalize_df(features_df)
 
@@ -166,17 +180,28 @@ def get_all_filepaths():
             continue
         res.append(os.path.join(train_folder, datafile))
     return res
+    # return [
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px1_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px2_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px3_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px4_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px5_datacollection.csv'
+    # ]
     # return [test_data_file_v3]
 
 
-def load_train_test_data_raw_normalized():
+def load_train_test_data_raw_normalized(added_feature=False):
     train_x, train_y, test_x, test_y = [], [], [], []
 
     filepaths = get_all_filepaths()
     for i in range(len(filepaths)):
         filepath = filepaths[i]
         print("Loading from file: " + filepath + " (" + str(i + 1) + "/" + str(len(filepaths)) + ")")
-        df = load_df_from_files(filepath, DF_TYPE_RAW)
+        if added_feature:
+            df_type = DF_TYPE_RAW_ADDED
+        else:
+            df_type = DF_TYPE_RAW
+        df = load_df_from_files(filepath, df_type)
         window_index_start = 0
         window_index_increasing_size = int(WINDOW_SIZE / 2)
         no_features = df.shape[1] - 1

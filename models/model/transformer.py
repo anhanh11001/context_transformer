@@ -3,6 +3,7 @@ from keras import layers, models
 from datahandler.constants import location_labels
 
 TRANSFORMER_V1_NAME = "Simple Transformer model v1 from Keras tutorial"
+TRANSFORMER_V2_NAME = "Simplified Transformer model v2"
 
 
 def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
@@ -46,3 +47,19 @@ def make_transformer_model_v1(
         x = layers.Dropout(mlp_dropout)(x)
     outputs = layers.Dense(num_classes, activation="softmax")(x)
     return TRANSFORMER_V1_NAME, models.Model(inputs, outputs)
+
+
+def make_transformer_model_v2(input_shape):
+    num_classes = len(location_labels)
+    inputs = layers.Input(shape=input_shape)
+    x = transformer_encoder(
+        inputs=inputs,
+        head_size=64,
+        num_heads=4,
+        ff_dim=64,
+        dropout=0
+    )
+
+    x = layers.GlobalAveragePooling1D(data_format="channels_first")(x)
+    outputs = layers.Dense(num_classes, activation="softmax")(x)
+    return TRANSFORMER_V2_NAME, models.Model(inputs, outputs)
