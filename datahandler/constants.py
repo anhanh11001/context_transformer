@@ -17,7 +17,7 @@ phone_label = 'labelPhone'
 activity_label = 'labelActivity'
 
 # FOLDER CONSTANT
-data_version = '/v3'
+data_version = '/v4'
 data_folder = str(get_project_root()) + "/data" + data_version
 train_folder = data_folder + "/train"
 test_folder = data_folder + "/test"
