@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from datahandler.constants import all_features, train_folder, location_labels
+from datahandler.constants import all_features, train_folder, location_labels, test_folder
 from datahandler.data_loader import load_data_from_file
 from datetime import timedelta
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
