@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from datahandler.constants import all_features, train_folder, location_labels, test_folder
+from datahandler.constants import all_features, train_folder, location_labels, test_folder, acc_features, mag_features
 from datahandler.data_loader import load_data_from_file
 from datetime import timedelta
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
@@ -18,7 +18,6 @@ DF_TYPE_TIME_SERIES_DOMAIN_NORMALIZED = 2
 DF_TYPE_TIME_SERIES_DOMAIN_PCA = 3
 WINDOW_SIZE = 40
 WINDOW_LENGTH_IN_SECONDS = 2
-raw_features = all_features
 added_features = ["accMag", "gyroMag", "magMag", "accAng", "gyroAng", "magAng"]
 test_split = 0.2
 top_10_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
@@ -56,11 +55,14 @@ def normalize_df(df):
     return normalized_df
 
 
-def load_df_from_files(filepath, df_type):
+def load_df_from_files(filepath, df_type, selected_features=all_features):
     # Step 1: Load from data
     df = load_data_from_file(filepath)
     df = df.drop("labelActivity", axis=1)
     df['labelPhone'] = df['labelPhone'].apply(lambda x: location_labels.index(x))
+    for feature in all_features:
+        if feature not in selected_features:
+            df = df.drop(feature, axis=1)
 
     # Step 2: Divide collected data into fixed-size chunk
     fixed_size_data = []
@@ -128,7 +130,7 @@ def load_df_from_files(filepath, df_type):
     feature_columns = []
     feature_data = []
 
-    domain_types = raw_features + added_features
+    domain_types = all_features + added_features
     feature_types = ["mean", "std", "min", "max"]
     for domain_type in domain_types:
         for feature_type in feature_types:
@@ -175,7 +177,7 @@ def load_df_from_files(filepath, df_type):
 ######### FINAL FUNCTIONS TO USE - Should return train/test set
 def get_all_filepaths():
     res = []
-    for datafile in os.listdir(train_folder):
+    for datafile in os.listdir(test_folder):
         if datafile.startswith("."):
             continue
         res.append(os.path.join(train_folder, datafile))
@@ -190,7 +192,7 @@ def get_all_filepaths():
     # return [test_data_file_v3]
 
 
-def load_train_test_data_raw_normalized(added_feature=False):
+def load_train_test_data_raw_normalized(added_feature=False, selected_features = all_features):
     train_x, train_y, test_x, test_y = [], [], [], []
 
     filepaths = get_all_filepaths()
@@ -201,7 +203,7 @@ def load_train_test_data_raw_normalized(added_feature=False):
             df_type = DF_TYPE_RAW_ADDED
         else:
             df_type = DF_TYPE_RAW
-        df = load_df_from_files(filepath, df_type)
+        df = load_df_from_files(filepath, df_type, selected_features)
         window_index_start = 0
         window_index_increasing_size = int(WINDOW_SIZE / 2)
         no_features = df.shape[1] - 1
