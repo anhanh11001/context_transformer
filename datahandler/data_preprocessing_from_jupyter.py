@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from datahandler.constants import all_features, train_folder, location_labels, test_folder, acc_features, mag_features
+from datahandler.constants import all_features, train_folder, location_labels, test_folder, acc_features, mag_features, \
+    v4_mix, v4_walking, v4_standing, v4_standing_simplified
 from datahandler.data_loader import load_data_from_file
 from datetime import timedelta
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
@@ -19,7 +20,8 @@ DF_TYPE_TIME_SERIES_DOMAIN_PCA = 3
 WINDOW_SIZE = 40
 WINDOW_LENGTH_IN_SECONDS = 2
 added_features = ["accMag", "gyroMag", "magMag", "accAng", "gyroAng", "magAng"]
-test_split = 0.2
+test_split = 0.15
+data_folder = v4_mix
 top_10_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
                    "stdmagnetometerY", "stdgyroAng", "mingyroAng", "stdaccelerometerX"]
 top_15_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
@@ -177,22 +179,23 @@ def load_df_from_files(filepath, df_type, selected_features=all_features):
 ######### FINAL FUNCTIONS TO USE - Should return train/test set
 def get_all_filepaths():
     res = []
-    for datafile in os.listdir(test_folder):
+    for datafile in os.listdir(data_folder):
         if datafile.startswith("."):
             continue
-        res.append(os.path.join(train_folder, datafile))
+        path = os.path.join(data_folder, datafile)
+        if os.path.isfile(path):
+            res.append(path)
     return res
     # return [
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px1_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px2_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px3_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px4_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v3/train/px5_datacollection.csv'
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht11_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht12_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht13_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht14_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht15_datacollection.csv'
     # ]
-    # return [test_data_file_v3]
 
 
-def load_train_test_data_raw_normalized(added_feature=False, selected_features = all_features):
+def load_train_test_data_raw_normalized(added_feature=False, selected_features=all_features):
     train_x, train_y, test_x, test_y = [], [], [], []
 
     filepaths = get_all_filepaths()

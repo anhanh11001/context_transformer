@@ -1,0 +1,61 @@
+LOG ON DATE TIME: 2022-06-14 02:52:16.307584
+
+*************************************************
+Configuration
+Window size: 40
+Window time in second: 2
+Maximum number of epochs: 1000
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: adam
+Loss function: sparse_categorical_crossentropy
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(6377, 40, 9)
+Data testing shape: $(1122, 40, 9)
+
+*************************************************
+Model
+Model name: Simple LSTM model v1 from Book
+Model: "sequential_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ lstm_1 (LSTM)               (None, 60)                16800     
+                                                                 
+ dropout_1 (Dropout)         (None, 60)                0         
+                                                                 
+ dense_5 (Dense)             (None, 100)               6100      
+                                                                 
+ dense_6 (Dense)             (None, 5)                 505       
+                                                                 
+=================================================================
+Total params: 23,405
+Trainable params: 23,405
+Non-trainable params: 0
+_________________________________________________________________
+
+*************************************************
+Result
+Training time: 669.6556429862976 seconds.
+Highest validation accuracy: 0.6767317652702332
+
+*************************************************
+Test evaluation
+Test accuracy: 0.47147950530052185
+Test loss: 1.2478859424591064
+Metric report: 
+              precision    recall  f1-score   support
+
+         0.0       0.75      0.09      0.17       224
+         1.0       0.37      0.42      0.39       236
+         2.0       0.41      0.85      0.55       214
+         3.0       0.72      0.61      0.66       238
+         4.0       0.44      0.40      0.42       210
+
+    accuracy                           0.47      1122
+   macro avg       0.54      0.47      0.44      1122
+weighted avg       0.54      0.47      0.44      1122
+

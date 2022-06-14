@@ -1,0 +1,79 @@
+LOG ON DATE TIME: 2022-06-14 02:37:46.871627
+
+*************************************************
+Configuration
+Window size: 40
+Window time in second: 2
+Maximum number of epochs: 1000
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: adam
+Loss function: sparse_categorical_crossentropy
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(6377, 40, 9)
+Data testing shape: $(1122, 40, 9)
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(6377, 40, 9)
+Data testing shape: $(1122, 40, 9)
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(6377, 40, 9)
+Data testing shape: $(1122, 40, 9)
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(6377, 40, 9)
+Data testing shape: $(1122, 40, 9)
+
+*************************************************
+Model
+Model name: Simple LSTM model v1 from Book
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ lstm (LSTM)                 (None, 60)                16800     
+                                                                 
+ dropout (Dropout)           (None, 60)                0         
+                                                                 
+ dense_3 (Dense)             (None, 100)               6100      
+                                                                 
+ dense_4 (Dense)             (None, 5)                 505       
+                                                                 
+=================================================================
+Total params: 23,405
+Trainable params: 23,405
+Non-trainable params: 0
+_________________________________________________________________
+
+*************************************************
+Result
+Training time: 824.0234298706055 seconds.
+Highest validation accuracy: 0.6731793880462646
+
+*************************************************
+Test evaluation
+Test accuracy: 0.5053476095199585
+Test loss: 1.1599395275115967
+Metric report: 
+              precision    recall  f1-score   support
+
+         0.0       0.39      0.60      0.47       224
+         1.0       0.53      0.40      0.46       236
+         2.0       0.53      0.55      0.54       214
+         3.0       0.81      0.60      0.69       238
+         4.0       0.38      0.38      0.38       210
+
+    accuracy                           0.51      1122
+   macro avg       0.53      0.50      0.51      1122
+weighted avg       0.54      0.51      0.51      1122
+

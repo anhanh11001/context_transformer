@@ -1,0 +1,86 @@
+LOG ON DATE TIME: 2022-06-14 13:56:07.516048
+
+*************************************************
+Configuration
+Window size: 40
+Window time in second: 2
+Maximum number of epochs: 1000
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: <keras.optimizer_v2.adam.Adam object at 0x1498580a0>
+Loss function: sparse_categorical_crossentropy
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(3812, 40, 9)
+Data testing shape: $(685, 40, 9)
+
+*************************************************
+Model
+Model name: Simple Transformer model v1 from Keras tutorial
+Model: "model_5"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_6 (InputLayer)           [(None, 40, 9)]      0           []                               
+                                                                                                  
+ layer_normalization (LayerNorm  (None, 40, 9)       18          ['input_6[0][0]']                
+ alization)                                                                                       
+                                                                                                  
+ multi_head_attention (MultiHea  (None, 40, 9)       3753        ['layer_normalization[0][0]',    
+ dAttention)                                                      'layer_normalization[0][0]']    
+                                                                                                  
+ dropout_1 (Dropout)            (None, 40, 9)        0           ['multi_head_attention[0][0]']   
+                                                                                                  
+ tf.__operators__.add (TFOpLamb  (None, 40, 9)       0           ['dropout_1[0][0]',              
+ da)                                                              'input_6[0][0]']                
+                                                                                                  
+ layer_normalization_1 (LayerNo  (None, 40, 9)       18          ['tf.__operators__.add[0][0]']   
+ rmalization)                                                                                     
+                                                                                                  
+ conv1d_15 (Conv1D)             (None, 40, 4)        40          ['layer_normalization_1[0][0]']  
+                                                                                                  
+ dropout_2 (Dropout)            (None, 40, 4)        0           ['conv1d_15[0][0]']              
+                                                                                                  
+ conv1d_16 (Conv1D)             (None, 40, 9)        45          ['dropout_2[0][0]']              
+                                                                                                  
+ tf.__operators__.add_1 (TFOpLa  (None, 40, 9)       0           ['conv1d_16[0][0]',              
+ mbda)                                                            'tf.__operators__.add[0][0]']   
+                                                                                                  
+ global_average_pooling1d_5 (Gl  (None, 40)          0           ['tf.__operators__.add_1[0][0]'] 
+ obalAveragePooling1D)                                                                            
+                                                                                                  
+ dense_7 (Dense)                (None, 128)          5248        ['global_average_pooling1d_5[0][0
+                                                                 ]']                              
+                                                                                                  
+ dropout_3 (Dropout)            (None, 128)          0           ['dense_7[0][0]']                
+                                                                                                  
+ dense_8 (Dense)                (None, 3)            387         ['dropout_3[0][0]']              
+                                                                                                  
+==================================================================================================
+Total params: 9,509
+Trainable params: 9,509
+Non-trainable params: 0
+__________________________________________________________________________________________________
+
+*************************************************
+Result
+Training time: 453.4031410217285 seconds.
+Highest validation accuracy: 0.9628528952598572
+
+*************************************************
+Test evaluation
+Test accuracy: 0.9401459693908691
+Test loss: 0.2285538762807846
+Metric report: 
+              precision    recall  f1-score   support
+
+         0.0       0.96      0.92      0.94       244
+         1.0       0.92      0.93      0.92       229
+         2.0       0.94      0.97      0.96       212
+
+    accuracy                           0.94       685
+   macro avg       0.94      0.94      0.94       685
+weighted avg       0.94      0.94      0.94       685
+

@@ -1,0 +1,81 @@
+LOG ON DATE TIME: 2022-06-14 02:14:16.972938
+
+*************************************************
+Configuration
+Window size: 40
+Window time in second: 2
+Maximum number of epochs: 1000
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: adam
+Loss function: sparse_categorical_crossentropy
+
+*************************************************
+Data
+Data loaded from version /v4
+Data training shape: $(6377, 40, 9)
+Data testing shape: $(1122, 40, 9)
+
+*************************************************
+Model
+Model name: Simple CNN model v1 from Keras tutorial
+Model: "model_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_2 (InputLayer)        [(None, 40, 9)]           0         
+                                                                 
+ conv1d_3 (Conv1D)           (None, 40, 64)            1792      
+                                                                 
+ batch_normalization_3 (Batc  (None, 40, 64)           256       
+ hNormalization)                                                 
+                                                                 
+ re_lu_3 (ReLU)              (None, 40, 64)            0         
+                                                                 
+ conv1d_4 (Conv1D)           (None, 40, 64)            12352     
+                                                                 
+ batch_normalization_4 (Batc  (None, 40, 64)           256       
+ hNormalization)                                                 
+                                                                 
+ re_lu_4 (ReLU)              (None, 40, 64)            0         
+                                                                 
+ conv1d_5 (Conv1D)           (None, 40, 64)            12352     
+                                                                 
+ batch_normalization_5 (Batc  (None, 40, 64)           256       
+ hNormalization)                                                 
+                                                                 
+ re_lu_5 (ReLU)              (None, 40, 64)            0         
+                                                                 
+ global_average_pooling1d_1   (None, 64)               0         
+ (GlobalAveragePooling1D)                                        
+                                                                 
+ dense_1 (Dense)             (None, 5)                 325       
+                                                                 
+=================================================================
+Total params: 27,589
+Trainable params: 27,205
+Non-trainable params: 384
+_________________________________________________________________
+
+*************************************************
+Result
+Training time: 614.7550258636475 seconds.
+Highest validation accuracy: 0.7753108143806458
+
+*************************************************
+Test evaluation
+Test accuracy: 0.7085561752319336
+Test loss: 0.7586408257484436
+Metric report: 
+              precision    recall  f1-score   support
+
+         0.0       0.77      0.91      0.83       224
+         1.0       0.59      0.68      0.63       236
+         2.0       0.75      0.72      0.73       214
+         3.0       0.97      0.44      0.61       238
+         4.0       0.64      0.81      0.72       210
+
+    accuracy                           0.71      1122
+   macro avg       0.74      0.71      0.70      1122
+weighted avg       0.74      0.71      0.70      1122
+

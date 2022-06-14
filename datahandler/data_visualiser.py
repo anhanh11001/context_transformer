@@ -2,16 +2,20 @@ import os
 
 import matplotlib.pyplot as plt
 import pandas
-from datahandler.constants import test_data_file_step_v3, test_data_file_v3, all_features, plots_folder
+from datahandler.constants import test_data_file_step_v3, test_data_file_v3, all_features, plots_folder, train_folder, \
+    v4_standing
 from datahandler.data_loader import load_data_from_file, get_files_from_folder, load_date_from_steptracking_file
 from datetime import datetime, timezone, timedelta
+
+from utils import get_project_root
 
 
 def plot_features(
         df,
         title,
         features=all_features,
-        fragmented_seconds=None,
+        start_seconds=None,
+        end_seconds=None,
         show_plot=True,
         save_plot=False,
         save_location=None,
@@ -21,15 +25,25 @@ def plot_features(
         step_dates = []
     fig, axs = plt.subplots(len(features))
     fig.suptitle(title)
-    if fragmented_seconds is None:
-        plot_df = df
+
+    if end_seconds is None:
+        end_index = df.shape[0]
     else:
         end_index = 0
         while end_index < len(df):
             end_index += 1
-            if df.index[end_index] - df.index[0] > pandas.Timedelta(seconds=fragmented_seconds):
+            if df.index[end_index] - df.index[0] > pandas.Timedelta(seconds=end_seconds):
                 break
-        plot_df = df[0:end_index]
+    if start_seconds is None:
+        start_index = 0
+    else:
+        start_index = df.shape[0]
+        while start_index >= 0:
+            start_index -= 1
+            if df.index[start_index] - df.index[0] < pandas.Timedelta(seconds=start_seconds):
+                break
+        start_index = start_index + 1
+    plot_df = df[start_index:end_index]
     plot_start_date = plot_df.index[0].to_pydatetime()
     plot_end_date = plot_df.index[plot_df.shape[0] - 1].to_pydatetime()
     dates = [d for d in step_dates if plot_start_date <= d <= plot_end_date]
@@ -75,7 +89,7 @@ def generate_plots_from_folder(from_folder):
             df=df,
             title="All features: " + filename,
             features=all_features,
-            fragmented_seconds=None,
+            end_seconds=None,
             show_plot=False,
             save_plot=True,
             save_location=plots_folder
@@ -83,15 +97,16 @@ def generate_plots_from_folder(from_folder):
     print("All plots generated. See results at folder: " + plots_folder)
 
 
-# data_df = load_data_from_file(test_data_file_v3)
+file_name = str(get_project_root()) + "/data/v4/mix/mm1_datacollection.csv"
+data_df = load_data_from_file(file_name)
 # dates = load_date_from_steptracking_file(test_data_file_step_v3)
-# plot_features(
-#     df=data_df,
-#     title="All features: " + test_data_file_v3,
-#     features=all_features,
-#     fragmented_seconds=10,
-#     show_plot=True,
-#     save_plot=False,
-#     step_dates=dates
-# )
-# generate_plots_from_folder(train_folder)
+plot_features(
+    df=data_df,
+    title="All features: " + test_data_file_v3,
+    features=all_features,
+    end_seconds=10,
+    show_plot=True,
+    save_plot=False,
+    # step_dates=dates
+)
+# generate_plots_from_folder(v4_standing)
