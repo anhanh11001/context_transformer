@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from datahandler.constants import all_features, train_folder, location_labels, test_folder, acc_features, mag_features, \
-    v4_mix, v4_walking, v4_standing, v4_standing_simplified
+    v4_mix, v4_walking, v4_standing, v4_standing_simplified, v4_mix_labeled, activity_labels
 from datahandler.data_loader import load_data_from_file
 from datetime import timedelta
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
@@ -21,7 +21,7 @@ WINDOW_SIZE = 40
 WINDOW_LENGTH_IN_SECONDS = 2
 added_features = ["accMag", "gyroMag", "magMag", "accAng", "gyroAng", "magAng"]
 test_split = 0.15
-data_folder = v4_mix
+data_folder = v4_mix_labeled
 top_10_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
                    "stdmagnetometerY", "stdgyroAng", "mingyroAng", "stdaccelerometerX"]
 top_15_features = ["stdmagAng", "minmagnetometerZ", "maxmagAng", "maxmagnetometerZ", "minmagAng", "minaccelerometerX",
@@ -44,23 +44,31 @@ def standardize_pca_df(df):
 
 
 def normalize_df(df):
+    contain_activity_labels = 'labelActivity' in df.columns
     feature_count = df.shape[1] - 1
     values = df.iloc[:, 0:feature_count]
-    labels = df.loc[:, "labelPhone"].set_axis(range(df.shape[0]))
+    phone_labels = df.loc[:, "labelPhone"].set_axis(range(df.shape[0]))
+    if contain_activity_labels:
+        activity_labels = df.loc[:, "labelActivity"].set_axis(range(df.shape[0]))
     normalizer = MinMaxScaler()
     normalized_values = normalizer.fit_transform(values)
     normalized_df = pd.DataFrame(
         data=normalized_values,
         columns=values.columns
     )
-    normalized_df["labelPhone"] = labels
+    normalized_df["labelPhone"] = phone_labels
+    if contain_activity_labels:
+        normalized_df["labelActivity"] = activity_labels
     return normalized_df
 
 
-def load_df_from_files(filepath, df_type, selected_features=all_features):
+def load_df_from_files(filepath, df_type, selected_features=all_features, drop_activity=True):
     # Step 1: Load from data
     df = load_data_from_file(filepath)
-    df = df.drop("labelActivity", axis=1)
+    if drop_activity:
+        df = df.drop("labelActivity", axis=1)
+    else:
+        df['labelActivity'] = df['labelActivity'].apply(lambda x: activity_labels.index(x))
     df['labelPhone'] = df['labelPhone'].apply(lambda x: location_labels.index(x))
     for feature in all_features:
         if feature not in selected_features:
@@ -187,13 +195,51 @@ def get_all_filepaths():
             res.append(path)
     return res
     # return [
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht11_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht12_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht13_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht14_datacollection.csv',
-    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/standing/ht15_datacollection.csv'
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt1_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt2_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt3_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt4_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt5_datacollection.csv'
     # ]
 
+
+def load_all_raw_multitask_data():
+    train_x, train_context_y, train_activity_y, test_x, test_context_y, test_activity_y = [], [], [], [], [], []
+
+    filepaths = get_all_filepaths()
+
+    # filepaths = [
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt1_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt2_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt3_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt4_datacollection.csv',
+    #     '/Users/duc.letran/Desktop/FINAL PROJECT/context_transformer/data/v4/mix_labeled/tt5_datacollection.csv'
+    # ]
+    for i in range(len(filepaths)):
+        filepath = filepaths[i]
+        print("Loading from file: " + filepath + " (" + str(i + 1) + "/" + str(len(filepaths)) + ")")
+        df = load_df_from_files(filepath, DF_TYPE_RAW, all_features, drop_activity=False)
+
+        window_index_start = 0
+        window_index_increasing_size = int(WINDOW_SIZE / 2)
+        no_features = df.shape[1] - 2
+        values = df.iloc[:, 0:no_features]
+        phone_labels = df.loc[:, "labelPhone"]
+        activity_labels = df.loc[:, "labelActivity"]
+        while window_index_start + WINDOW_SIZE < df.shape[0]:
+            if random() < test_split:
+                test_x.append(values[window_index_start:(window_index_start + WINDOW_SIZE)])
+                test_context_y.append(phone_labels[window_index_start])
+                test_activity_y.append(activity_labels[window_index_start])
+            else:
+                train_x.append(values[window_index_start:(window_index_start + WINDOW_SIZE)])
+                train_context_y.append(phone_labels[window_index_start])
+                train_activity_y.append(activity_labels[window_index_start])
+
+            window_index_start += window_index_increasing_size
+
+    return np.array(train_x), np.array(train_context_y), np.array(train_activity_y), np.array(test_x), np.array(
+        test_context_y), np.array(test_activity_y)
 
 def load_train_test_data_raw_normalized(added_feature=False, selected_features=all_features):
     train_x, train_y, test_x, test_y = [], [], [], []

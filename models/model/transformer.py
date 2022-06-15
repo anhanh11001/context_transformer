@@ -1,9 +1,10 @@
 from keras import layers, models
 
-from datahandler.constants import location_labels
+from datahandler.constants import location_labels, activity_labels
 
 TRANSFORMER_V1_NAME = "Simple Transformer model v1 from Keras tutorial"
 TRANSFORMER_V2_NAME = "Simplified Transformer model v2"
+TRANSFORMER_V3_NAME = "Simple Transformer model v3 with multi-task learning"
 
 
 def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
@@ -47,6 +48,36 @@ def make_transformer_model_v1(
         x = layers.Dropout(mlp_dropout)(x)
     outputs = layers.Dense(num_classes, activation="softmax")(x)
     return TRANSFORMER_V1_NAME, models.Model(inputs, outputs)
+
+
+def make_transformer_model_v3(
+        input_shape,
+        head_size,
+        num_heads,
+        ff_dim,
+        num_transformer_blocks,
+        dropout=0,
+        mlp_dropout=0,
+):
+    inputs = layers.Input(shape=input_shape)
+    x = inputs
+    for _ in range(num_transformer_blocks):
+        x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
+
+    x = layers.GlobalAveragePooling1D(data_format="channels_first")(x)
+
+    dim = 128
+    dense_context = layers.Dense(dim, activation="relu")(x)
+    dropout_context = layers.Dropout(mlp_dropout)(dense_context)
+    output_context = layers.Dense(len(location_labels), activation="softmax", name='context_output')(dropout_context)
+
+    dense_activity = layers.Dense(dim, activation="relu")(x)
+    dropout_activity = layers.Dropout(mlp_dropout)(dense_activity)
+    output_activity = layers.Dense(len(activity_labels), activation="softmax", name='activity_output')(dropout_activity)
+
+    outputs = [output_context, output_activity]
+
+    return TRANSFORMER_V3_NAME, models.Model(inputs, outputs)
 
 
 def make_transformer_model_v2(input_shape):
