@@ -8,7 +8,6 @@ from datetime import timedelta
 
 def get_step_tracking_time_calibrated_diff(filename):
     # More information found on link
-    print(filename)
     if filename.startswith("op"):  # Data: HTC sync01 - Step: Pixel3a
         return 202
     elif filename.startswith("ps"):  # Data: Samsung other - Step: Pixel3a
