@@ -98,15 +98,16 @@ def generate_plots_from_folder(from_folder):
 
 
 # file_name = str(get_project_root()) + "/data/v4/mix/mm1_datacollection.csv"
-# data_df = load_data_from_file(file_name)
+# data_df = load_data_from_file(test_data_file_v3)
 # dates = load_date_from_steptracking_file(test_data_file_step_v3)
 # plot_features(
 #     df=data_df,
 #     title="All features: " + test_data_file_v3,
 #     features=all_features,
+#     start_seconds=0,
 #     end_seconds=10,
 #     show_plot=True,
 #     save_plot=False,
-#     # step_dates=dates
+#     step_dates=dates
 # )
 # generate_plots_from_folder(v4_standing)
