@@ -1,0 +1,56 @@
+LOG ON DATE TIME: 2022-06-21 14:52:00.466006
+
+*************************************************
+Model Configuration
+Model: "model_2"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_3 (InputLayer)        [(None, 40, 9)]           0         
+                                                                 
+ conv1d_9 (Conv1D)           (None, 40, 64)            1792      
+                                                                 
+ batch_normalization_6 (Batc  (None, 40, 64)           256       
+ hNormalization)                                                 
+                                                                 
+ re_lu_6 (ReLU)              (None, 40, 64)            0         
+                                                                 
+ conv1d_10 (Conv1D)          (None, 40, 64)            12352     
+                                                                 
+ batch_normalization_7 (Batc  (None, 40, 64)           256       
+ hNormalization)                                                 
+                                                                 
+ re_lu_7 (ReLU)              (None, 40, 64)            0         
+                                                                 
+ global_average_pooling1d_2   (None, 64)               0         
+ (GlobalAveragePooling1D)                                        
+                                                                 
+ dense_10 (Dense)            (None, 128)               8320      
+                                                                 
+ dense_11 (Dense)            (None, 1)                 129       
+                                                                 
+=================================================================
+Total params: 23,105
+Trainable params: 22,849
+Non-trainable params: 256
+_________________________________________________________________
+Epoch: 300
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: Adam with starting lr 0.005
+Loss function: mse
+Reduce LR patience: 30
+Early stopping patience: 150
+
+
+*************************************************
+Data Configuration
+Data training shape: $(9167, 40, 9)
+Data testing shape: $(1626, 40, 9)
+
+*************************************************
+Result
+Training time: 432.97831320762634 seconds.
+Smallest validation loss: 0.9599135518074036
+Correct 1009/1626
+Mean difference: 0.470479704797048

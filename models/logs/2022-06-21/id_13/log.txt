@@ -1,0 +1,48 @@
+LOG ON DATE TIME: 2022-06-21 14:29:41.506698
+
+*************************************************
+Model Configuration
+Model: "sequential_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ conv1d_1 (Conv1D)           (None, 40, 12)            336       
+                                                                 
+ dropout_2 (Dropout)         (None, 40, 12)            0         
+                                                                 
+ max_pooling1d_1 (MaxPooling  (None, 20, 12)           0         
+ 1D)                                                             
+                                                                 
+ flatten_1 (Flatten)         (None, 240)               0         
+                                                                 
+ dense_2 (Dense)             (None, 50)                12050     
+                                                                 
+ dropout_3 (Dropout)         (None, 50)                0         
+                                                                 
+ dense_3 (Dense)             (None, 1)                 51        
+                                                                 
+=================================================================
+Total params: 12,437
+Trainable params: 12,437
+Non-trainable params: 0
+_________________________________________________________________
+Epoch: 300
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: Adam with starting lr 0.005
+Loss function: mse
+Reduce LR patience: 30
+Early stopping patience: 150
+
+
+*************************************************
+Data Configuration
+Data training shape: $(3034, 40, 9)
+Data testing shape: $(565, 40, 9)
+
+*************************************************
+Result
+Training time: 45.044474840164185 seconds.
+Smallest validation loss: 1.0522571802139282
+Correct 279/565
+Mean difference: 0.6141592920353982

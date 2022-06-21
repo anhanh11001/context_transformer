@@ -1,0 +1,49 @@
+LOG ON DATE TIME: 2022-06-21 14:21:45.094709
+
+*************************************************
+Model Configuration
+Model: "model"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_1 (InputLayer)        [(None, 40, 9)]           0         
+                                                                 
+ conv1d_5 (Conv1D)           (None, 40, 64)            1792      
+                                                                 
+ batch_normalization (BatchN  (None, 40, 64)           256       
+ ormalization)                                                   
+                                                                 
+ re_lu (ReLU)                (None, 40, 64)            0         
+                                                                 
+ global_average_pooling1d (G  (None, 64)               0         
+ lobalAveragePooling1D)                                          
+                                                                 
+ dense_10 (Dense)            (None, 128)               8320      
+                                                                 
+ dense_11 (Dense)            (None, 1)                 129       
+                                                                 
+=================================================================
+Total params: 10,497
+Trainable params: 10,369
+Non-trainable params: 128
+_________________________________________________________________
+Epoch: 300
+Batch size: 32
+Validation split: 0.17647058823529413
+Optimizer: Adam with starting lr 0.005
+Loss function: mse
+Reduce LR patience: 30
+Early stopping patience: 150
+
+
+*************************************************
+Data Configuration
+Data training shape: $(3054, 40, 9)
+Data testing shape: $(544, 40, 9)
+
+*************************************************
+Result
+Training time: 54.95929002761841 seconds.
+Smallest validation loss: 8.0
+Correct 175/544
+Mean difference: 1.974264705882353
