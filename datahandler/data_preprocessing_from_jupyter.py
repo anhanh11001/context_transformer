@@ -11,7 +11,7 @@ from datahandler.data_loader import load_data_from_file
 from datetime import timedelta
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
 from sklearn.decomposition import PCA
-from random import random
+from random import random, seed
 
 DF_TYPE_RAW = 0
 DF_TYPE_RAW_ADDED = 1
@@ -204,6 +204,7 @@ def get_all_filepaths():
 
 
 def load_all_raw_multitask_data():
+    seed(100)
     train_x, train_context_y, train_activity_y, test_x, test_context_y, test_activity_y = [], [], [], [], [], []
 
     filepaths = get_all_filepaths()
